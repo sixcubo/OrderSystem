@@ -46,7 +46,6 @@ public class UserServlet extends HttpServlet {
 
     private void toPay(HttpServletRequest req, HttpServletResponse resp) {
 
-
     }
 
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
