@@ -4,16 +4,16 @@ package com.system.beans;
  * @author nanfang
  * @create 2021/01/11/14:35
  */
-public class Detail {
+public class OrderDetail {
     private int orderId;
     private int dishId;
 
-    public Detail(int orderId, int dishId) {
+    public OrderDetail(int orderId, int dishId) {
         this.orderId = orderId;
         this.dishId = dishId;
     }
 
-    public Detail() {
+    public OrderDetail() {
     }
 
     public int getOrderId() {
