@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 public class UserServlet extends HttpServlet {
     private static User user=new User();
     private static UserService userService=new UserService();
-
-
     /**
      * 中国电信号码格式验证 **/
     private static final String CHINA_TELECOM_PATTERN = "(?:^(?:\\+86)?1(?:33|53|7[37]|8[019]|9[19])\\d{8}$)|(?:^(?:\\+86)?1700\\d{7}$)";
@@ -45,14 +43,14 @@ public class UserServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            req.setCharacterEncoding("utf-8");
+//            req.setCharacterEncoding("utf-8");
             String method = req.getParameter("method");
             if(method!=null)
             {
                 System.out.println("访问后端成功");
                 if(method.equals("login")){
                     toLogin(req,resp);
-                }else if (method.equals("reg")) {
+                }else if (method.equals("register")) {
                     toReg(req,resp);
                 }else if(method.equals("list")){
                     toShow(req,resp);
@@ -101,10 +99,12 @@ public class UserServlet extends HttpServlet {
     *
     * */
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
+        System.out.println("toReg");
         user.setUsername(req.getParameter("username"));
         user.setPassword(req.getParameter("password"));
         user.setTel(req.getParameter("tel"));
         try {
+            resp.getWriter().print(user);
             resp.getWriter().print(userService.registerService(user));
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,9 +115,10 @@ public class UserServlet extends HttpServlet {
     * 更新账户余额
     * */
     private void toPay(HttpServletRequest req, HttpServletResponse resp) {
-            user.setUsername(req.getParameter("username"));
-            req.getParameter("consume");//得到今日消费总钱数
-            //userService.updateUserService(user,);
+        user.setUsername(req.getParameter("username"));
+        req.getParameter("consume");//得到今日消费总钱数
+
+        //userService.updateUserService(user,);
     }
 
     /*

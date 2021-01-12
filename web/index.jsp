@@ -11,6 +11,9 @@
     <title>$Title$</title>
   </head>
   <body>
-  $END$
+    <form action="${pageContext.request.contextPath}/dish" method="post"  enctype="multipart/form-data">
+      商品展示<input type="file" name="file" id="file">
+      <input type="submit" name="Submit" value="上传">
+    </form>
   </body>
 </html>

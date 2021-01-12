@@ -14,12 +14,15 @@ public class UserService  {
     * */
     public String loginService(User user){
         int id= user.getId();
+        String password=user.getPassword();
+        //还没有写数据库操作
         return "";
     }
     /*
     * 用户注册
     * */
     public String registerService(User user){
+
         return "";
     }
     /*
