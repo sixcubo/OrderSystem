@@ -12,6 +12,7 @@ public class Dish {
     private String score;//评分
     private String comment;
     private String url;
+
     public Dish() {
     }
 

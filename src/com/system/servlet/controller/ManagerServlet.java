@@ -36,19 +36,11 @@ public class ManagerServlet extends HttpServlet {
                 }else if(method.equals("search")){
                     toSearch(req,resp);
                 }
-
-
             }
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
     }
 
