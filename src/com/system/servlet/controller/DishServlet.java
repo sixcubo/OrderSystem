@@ -16,7 +16,11 @@ public class DishServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("DishServlet");
-        //PictureProcess.upload(req,resp);
-        PictureProcess.deletePicture(req, resp);
+        String method=req.getParameter("method");
+        switch(method){
+            case "uploadPicture":PictureProcess.upload(req,resp);
+            case "deletePicture":PictureProcess.deletePicture(req,resp);
+
+        }
     }
 }

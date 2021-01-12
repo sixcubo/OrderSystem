@@ -24,7 +24,7 @@ public class MerchantServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         System.out.println("initMerchantServlet");
-        DBManager.getInst().initDB();;
+        DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
     }
 
@@ -36,18 +36,18 @@ public class MerchantServlet extends HttpServlet {
             if(method!=null) {
                 if (method.equals("login")) {
                     toLogin(req,resp);
-                }else if (method.equals("reg")) {
+                }else if (method.equals("register")) {
                     toReg(req,resp);
-                }else if(method.equals("list")){
-                    toShow(req,resp);
                 }else if(method.equals("update")) {
-                    toUpdate(req,resp);
+                    toUpdatePassword(req,resp);
                 }else if(method.equals("add")){
                     toAdd(req,resp);
-                }else if(method.equals("del")){
+                }else if(method.equals("delete")){
                     toDel(req,resp);
                 }else if(method.equals("search")){
-                    toSearch(req,resp);
+                    toSelect(req,resp);
+                }else if(method.equals("selectAll")){
+                    toSelectAll(req,resp);
                 }else {
                     resp.getWriter().print("调用方法错误");
                 }
@@ -56,40 +56,58 @@ public class MerchantServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
-    private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
+    /*
+    * 查找单个商家信息，根据商家名
+    * */
+    private void toSelect(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("name"));
-        try {
-            resp.getWriter().print(merchantService.selectMerchantService(merchant));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        merchantService.selectMerchant(req,resp,merchant);
     }
 
+    /*
+    * 根据商家名删除该商家
+    * */
     private void toDel(HttpServletRequest req, HttpServletResponse resp) {
-        merchant.setUsername(req.getParameter("name"));
-        try {
-            resp.getWriter().print(merchantService.deleteMerchantService(merchant));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        merchant.setUsername(req.getParameter("username"));
+        merchantService.deleteMerchantService(req,resp,merchant);
     }
-
+    /*
+    * 添加一个商家
+    * */
     private void toAdd(HttpServletRequest req, HttpServletResponse resp) {
+        merchant.setUsername(req.getParameter("username"));
+        merchant.setPassword(req.getParameter("password"));
+        merchantService.insertMerchant(req,resp,merchant);
     }
 
-    private void toUpdate(HttpServletRequest req, HttpServletResponse resp) {
+    /*
+    * 修改商家密码
+    * */
+    private void toUpdatePassword(HttpServletRequest req, HttpServletResponse resp) {
+        merchant.setUsername(req.getParameter("username"));
+        merchant.setPassword(req.getParameter("password"));
+        Merchant newMerchant=new Merchant();
+        newMerchant.setUsername(merchant.getUsername());
+        newMerchant.setPassword(req.getParameter("newPassword"));
+        merchantService.updateMerchantService(req,resp,merchant,newMerchant);
     }
 
-    private void toShow(HttpServletRequest req, HttpServletResponse resp) {
-    }
+
 
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
+        merchant.setUsername(req.getParameter("username"));
+        merchant.setPassword(req.getParameter("password"));
+        merchantService.registerService(req,resp,merchant);
     }
 
     private void toLogin(HttpServletRequest req, HttpServletResponse res) {
-
-
+        merchant.setPassword(req.getParameter("password"));
+        merchant.setUsername(req.getParameter("username"));
+        merchantService.loginService(req,res,merchant);
         // set
+    }
+    private void toSelectAll(HttpServletRequest req, HttpServletResponse res) {
+        merchantService.selectMerchantAll(req,res);
     }
 
     @Override

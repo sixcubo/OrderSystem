@@ -40,7 +40,6 @@ public class DBManager {
         final String URL = "jdbc:mysql://121.4.121.91:3306/db_order_system?serverTimezone=UTC";
         final String USERNAME = "root";
         final String PASSWORD = "Songzhe_123";
-
         try {
             conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 //            stmt = conn.createStatement();
@@ -274,14 +273,15 @@ public class DBManager {
         try {
             stmt = conn.createStatement();
             res = stmt.executeQuery(sql);
-            res.next();
-
-            int id = res.getInt("id");
-            String password = res.getString("password");
-            String tel = res.getString("tel");
-            double money = res.getDouble("money");
-
-            user = new User(id, username, password, tel, money);
+            if(res.next()){
+                int id = res.getInt("id");
+                String password = res.getString("password");
+                String tel = res.getString("tel");
+                double money = res.getDouble("money");
+                user = new User(id, username, password, tel, money);
+            }else{
+                return null;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

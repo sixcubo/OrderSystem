@@ -8,7 +8,7 @@ import java.io.File;
  */
 public class test {
     public static void main(String[] args) {
-        String address="F:\\桌面\\OrderSystem\\out\\artifacts\\OrderSystem_war_exploded\\images";
+        String address="F:\\桌面\\OrderSystem\\out\\artifacts\\OrderSystem_war_exploded\\images\\2021_01_12_04_52_290.jpg";
         System.out.println(address);
         File file = new File(address);
         //判断文件是否存在

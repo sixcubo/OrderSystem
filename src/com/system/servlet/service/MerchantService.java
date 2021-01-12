@@ -3,6 +3,11 @@ package com.system.servlet.service;
 
 
 import com.system.beans.Merchant;
+import com.system.servlet.database.DBManager;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -11,23 +16,33 @@ import com.system.beans.Merchant;
  */
 
 public class MerchantService   {
-    public String loginService(Merchant manager) {
-        return null;
+    public void loginService(HttpServletRequest request, HttpServletResponse response,Merchant merchant) {
+        //****测试使用
+        System.out.println(merchant);
+        DBManager.getInst().initDB();
+        DBManager.getInst().connectDB();
+        //****
+        try {
+            response.getWriter().print("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void registerService(HttpServletRequest request, HttpServletResponse response,Merchant merchant) {
+
     }
 
-    public String registerService(Merchant manager) {
-        return null;
+    public void deleteMerchantService(HttpServletRequest request, HttpServletResponse response,Merchant merchant){
     }
 
-    public String deleteMerchantService(Merchant manager) {
-        return null;
+    public void updateMerchantService(HttpServletRequest request, HttpServletResponse response,Merchant oldMerchant, Merchant newMerchant) {
     }
 
-    public String updateMerchantService(Merchant oldMerchant, Merchant newMerchant) {
-        return null;
+    public void selectMerchantAll(HttpServletRequest request, HttpServletResponse response){
     }
+    public void selectMerchant(HttpServletRequest request, HttpServletResponse response,Merchant merchant){
+    }
+    public void insertMerchant(HttpServletRequest request, HttpServletResponse response,Merchant merchant){
 
-    public String selectMerchantService(Merchant manager){
-        return null;
     }
 }

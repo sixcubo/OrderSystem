@@ -1,6 +1,11 @@
 package com.system.servlet.service;
 import com.system.beans.User;
+import com.system.servlet.database.DBManager;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -9,44 +14,60 @@ import java.util.ArrayList;
  */
 
 public class UserService  {
+    private User user;
+    private HttpSession httpSession;
     /*
-    * 用户登录
+    * 用户登录,判断密码是否相等
     * */
-    public String loginService(User user){
-        int id= user.getId();
+    public void loginService(HttpServletRequest request, HttpServletResponse response,User user){
         String password=user.getPassword();
-        //还没有写数据库操作
-        return "";
+        //****测试使用
+        System.out.println(user);
+        DBManager.getInst().initDB();
+        DBManager.getInst().connectDB();
+        //****
+        this.user=DBManager.getInst().selectUserByUsername(user.getUsername());
+        try {
+            if(this.user!=null&&password.equals(this.user.getPassword())){
+                response.getWriter().print("true");
+            } else{
+                response.getWriter().print("false");
+            }
+        } catch (IOException e) {
+            System.out.println("loginService中response错误");
+            e.printStackTrace();
+        }
+
     }
     /*
     * 用户注册
     * */
-    public String registerService(User user){
-
-        return "";
+    public void registerService(HttpServletRequest request, HttpServletResponse response,User user){
+        try {
+            response.getWriter().print("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     /*
     * 删除用户
     * */
-    public String deleteUserService(User user) {
-        return null;
+    public void deleteUserService(HttpServletRequest request, HttpServletResponse response,User user) {
     }
     /*
     *查找单个用户
     */
-    public User selectUserService(User user) {
-        return null;
+    public void selectUserService(HttpServletRequest request, HttpServletResponse response,User user) {
     }
     /*
     * 查找所有用户
     * */
-    public ArrayList<User> selectUserAllService(User user){
-        return null;
+    public void selectUserAllService(HttpServletRequest request, HttpServletResponse response,User user){
     }
     /*
     * 更新用户信息，账户余额
     * */
-    public String updateUserService(User user,int consume){
+    public String updateUserService(HttpServletRequest request, HttpServletResponse response,User user,int consume){
         return null;
     }
 }

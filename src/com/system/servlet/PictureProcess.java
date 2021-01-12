@@ -71,9 +71,12 @@ public class PictureProcess {
         }
         return false;
     }
+
+    //得到picture
     public static boolean deletePicture(HttpServletRequest request,HttpServletResponse response){
+        System.out.println("deletePicture");
         //删除指定位置的本地图片(删除成功返回true,失败返回false)
-        String address=request.getSession().getServletContext().getRealPath("/images")+"\\"+request.getParameter("pictureName");
+        String address=request.getSession().getServletContext().getRealPath("\\images")+"\\"+request.getParameter("pictureName");
         System.out.println(address);
         System.out.println(new File(address).delete());
         return false;
