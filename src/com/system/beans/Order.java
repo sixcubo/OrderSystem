@@ -16,6 +16,7 @@ public class Order {
     private int userId;
 
     public Order() {
+
     }
 
     public Order(int id, int tableNum, String state, Data dateTime, String person, String price, int userId) {

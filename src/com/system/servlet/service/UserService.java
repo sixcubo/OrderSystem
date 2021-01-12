@@ -1,5 +1,7 @@
 package com.system.servlet.service;
-import com.system.beans.Users;
+import com.system.beans.User;
+
+import java.util.ArrayList;
 
 /**
  * @author nanfang
@@ -10,37 +12,38 @@ public class UserService  {
     /*
     * 用户登录
     * */
-    public String loginService(Users users){
-        int id= users.getId();
+    public String loginService(User user){
+        int id= user.getId();
         return "";
     }
     /*
     * 用户注册
     * */
-    public String registerService(Users users){
+    public String registerService(User user){
         return "";
     }
     /*
     * 删除用户
     * */
-    public String deleteUserService(Users users) {
+    public String deleteUserService(User user) {
         return null;
     }
-
-    /*
-    * 用户更新
-    * */
-    public String updateUserService(Users oldUser, Users newUser) {
-        return null;
-    }
-
     /*
     *查找单个用户
     */
-    public String selectUserService(Users user) {
+    public User selectUserService(User user) {
         return null;
     }
     /*
     * 查找所有用户
     * */
+    public ArrayList<User> selectUserAllService(User user){
+        return null;
+    }
+    /*
+    * 更新用户信息，账户余额
+    * */
+    public String updateUserService(User user,int consume){
+        return null;
+    }
 }
