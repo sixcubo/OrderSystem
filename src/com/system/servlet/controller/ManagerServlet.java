@@ -4,18 +4,17 @@ package com.system.servlet.controller;
  * @author cxh
  * @create 2021/01/11/15:25
  */
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import com.system.beans.Manager;
+import com.system.servlet.service.ManagerService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+
 
 public class ManagerServlet extends HttpServlet {
-    @java.lang.Override
+    private static Manager manager=new Manager();
+    private static ManagerService managerService=new ManagerService();
     public void service(HttpServletRequest req, HttpServletResponse resp){
         try {
             req.setCharacterEncoding("utf-8");
@@ -27,7 +26,7 @@ public class ManagerServlet extends HttpServlet {
                     toReg(req,resp);
                 }else if(method.equals("list")){
                     toShow(req,resp);
-                }else if(method.equals("upadate")) {
+                }else if(method.equals("update")) {
                     toUpdate(req,resp);
                 }else if(method.equals("add")){
                     toAdd(req,resp);
@@ -35,6 +34,8 @@ public class ManagerServlet extends HttpServlet {
                     toDel(req,resp);
                 }else if(method.equals("search")){
                     toSearch(req,resp);
+                }else {
+                    resp.getWriter().print("调用方法错误");
                 }
             }
         } catch (Exception e) {
@@ -42,9 +43,21 @@ public class ManagerServlet extends HttpServlet {
         }
     }
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
+        manager.setName(req.getParameter("name"));
+        try {
+            resp.getWriter().print(managerService.selectManagerService(manager));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void toDel(HttpServletRequest req, HttpServletResponse resp) {
+        manager.setName(req.getParameter("name"));
+        try {
+            resp.getWriter().print(managerService.selectManagerService(manager));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void toAdd(HttpServletRequest req, HttpServletResponse resp) {
