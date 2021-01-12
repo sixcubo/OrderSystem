@@ -9,6 +9,9 @@ public class Merchant {
     private String password;
     private int id;
 
+    public Merchant() {
+    }
+
     public Merchant(String username, String password, int id) {
         this.username = username;
         this.password = password;

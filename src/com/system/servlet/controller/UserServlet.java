@@ -101,10 +101,9 @@ public class UserServlet extends HttpServlet {
     *
     * */
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
-        user.setAccount(req.getParameter("username"));
+        user.setUsername(req.getParameter("username"));
         user.setPassword(req.getParameter("password"));
-        user.setTel(req.getParameter("tell"));
-        user.setEmail(req.getParameter("email"));
+        user.setTel(req.getParameter("tel"));
         try {
             resp.getWriter().print(userService.registerService(user));
         } catch (IOException e) {
@@ -116,7 +115,7 @@ public class UserServlet extends HttpServlet {
     * 更新账户余额
     * */
     private void toPay(HttpServletRequest req, HttpServletResponse resp) {
-            user.setAccount(req.getParameter("username"));
+            user.setUsername(req.getParameter("username"));
             req.getParameter("consume");//得到今日消费总钱数
             //userService.updateUserService(user,);
     }
@@ -125,7 +124,7 @@ public class UserServlet extends HttpServlet {
     * 根据用户名查找单个用户数据
     * */
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
-        user.setAccount(req.getParameter("usernmae"));
+        user.setUsername(req.getParameter("username"));
         try {
             resp.getWriter().print(userService.selectUserService(user));
         } catch (IOException e) {
@@ -146,9 +145,9 @@ public class UserServlet extends HttpServlet {
 
     private void toLogin(HttpServletRequest req, HttpServletResponse resp) {
         //username 为前端传送过来的用户名数据 password 为密码
-        String username = req.getParameter("usernanme");
+        String username = req.getParameter("username");
         String password = req.getParameter("password");
-        user.setAccount(username);
+        user.setUsername(username);
         user.setPassword(password);
         try {
             resp.getWriter().print(userService.loginService(user));

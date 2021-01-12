@@ -7,7 +7,7 @@
 
 	<servlet>
 		<servlet-name>merchant</servlet-name>
-		<servlet-class>com.system.servlet.controller.ManagerServlet</servlet-class>
+		<servlet-class>com.system.servlet.controller.MerchantServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>merchant</servlet-name>

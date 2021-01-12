@@ -5,18 +5,20 @@ package com.system.servlet.controller;
  * @create 2021/01/11/15:25
  */
 
-import com.system.servlet.service.ManagerService;
+import com.system.beans.Merchant;
 import com.system.servlet.database.DBManager;
+import com.system.servlet.service.MerchantService;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class ManagerServlet extends HttpServlet {
+public class MerchantServlet extends HttpServlet {
 
-    private static Manager manager=new Manager();
-    private static ManagerService managerService=new ManagerService();
+    private static Merchant merchant=new Merchant();
+    private static MerchantService merchantService=new MerchantService();
 
     @Override
     public void init() throws ServletException {
@@ -55,18 +57,18 @@ public class ManagerServlet extends HttpServlet {
         }
     }
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
-        manager.setName(req.getParameter("name"));
+        merchant.setUsername(req.getParameter("name"));
         try {
-            resp.getWriter().print(managerService.selectManagerService(manager));
+            resp.getWriter().print(merchantService.selectMerchantService(merchant));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void toDel(HttpServletRequest req, HttpServletResponse resp) {
-        manager.setName(req.getParameter("name"));
+        merchant.setUsername(req.getParameter("name"));
         try {
-            resp.getWriter().print(managerService.selectManagerService(manager));
+            resp.getWriter().print(merchantService.deleteMerchantService(merchant));
         } catch (IOException e) {
             e.printStackTrace();
         }
