@@ -6,31 +6,20 @@ package com.system.beans;
  */
 public class User {
     private int id;
-    private String account;
+    private String username;
     private String password;
     private String tel;
-    private String email;
+    private double money;
 
     public User() {
     }
 
-    public User(int id, String account, String password, String tel, String email) {
+    public User(int id, String username, String password, String tel, double money) {
         this.id = id;
-        this.account = account;
+        this.username = username;
         this.password = password;
         this.tel = tel;
-        this.email = email;
-    }
-
-    @Override
-    public String toString() {
-        return "Users{" +
-                "id=" + id +
-                ", account='" + account + '\'' +
-                ", password='" + password + '\'' +
-                ", tel='" + tel + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        this.money = money;
     }
 
     public int getId() {
@@ -41,12 +30,12 @@ public class User {
         this.id = id;
     }
 
-    public String getAccount() {
-        return account;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -65,11 +54,22 @@ public class User {
         this.tel = tel;
     }
 
-    public String getEmail() {
-        return email;
+    public double getMoney() {
+        return money;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", tel='" + tel + '\'' +
+                ", money=" + money +
+                '}';
     }
 }

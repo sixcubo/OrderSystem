@@ -4,17 +4,29 @@ package com.system.servlet.controller;
  * @author cxh
  * @create 2021/01/11/15:25
  */
-import com.system.beans.Manager;
+
 import com.system.servlet.service.ManagerService;
+import com.system.servlet.database.DBManager;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 public class ManagerServlet extends HttpServlet {
+
     private static Manager manager=new Manager();
     private static ManagerService managerService=new ManagerService();
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        DBManager.getInst().initDB();;
+        DBManager.getInst().connectDB();
+    }
+
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp){
         try {
             req.setCharacterEncoding("utf-8");
@@ -73,5 +85,15 @@ public class ManagerServlet extends HttpServlet {
     }
 
     private void toLogin(HttpServletRequest req, HttpServletResponse res) {
+
+
+        // set
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        DBManager.getInst().closeDB();
     }
 }

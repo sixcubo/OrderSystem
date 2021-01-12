@@ -6,12 +6,12 @@
 	<display-name>点餐系统</display-name>
 
 	<servlet>
-		<servlet-name>manager</servlet-name>
+		<servlet-name>merchant</servlet-name>
 		<servlet-class>com.system.servlet.controller.ManagerServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>manager</servlet-name>
-		<url-pattern>/manager</url-pattern>
+		<servlet-name>merchant</servlet-name>
+		<url-pattern>/merchant</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

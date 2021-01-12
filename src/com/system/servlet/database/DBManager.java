@@ -12,18 +12,17 @@ public class DBManager {
     // 使构造函数为 private，避免类被实例化
     private DBManager() {
     }
+
     private static DBManager instance = new DBManager(); // 单例
-    // 获取单例
+
     public static DBManager getInst() {
         return instance;
-    }
+    } // 获取单例
 
     private Connection conn = null;
     private Statement stat = null;
-//    private PreparedStatement preStat = null;
-//    private CallableStatement cstm = null;
 
-    private void initDB() {
+    public void initDB() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
@@ -31,7 +30,7 @@ public class DBManager {
         }
     }
 
-    private void connectDB() {
+    public void connectDB() {
         final String URL = "jdbc:mysql://121.4.121.91:3306/db_order_system?serverTimezone=UTC";
         final String USERNAME = "root";
         final String PASSWORD = "Songzhe_123";
@@ -54,7 +53,7 @@ public class DBManager {
         }
     }
 
-    private void closeDB() {
+    public void closeDB() {
         try {
             if (stat != null) {
                 stat.close();
@@ -68,7 +67,20 @@ public class DBManager {
     }
 
 
+    // 全局商家用户名
+    private String merchantUsername = null;
 
+    public void setMerchantUsername(String merchantUsername) {
+        this.merchantUsername = merchantUsername;
+    }
+
+    public String getMerchantUsername() {
+        return merchantUsername;
+    }
+
+
+    //    private PreparedStatement preStat = null;
+//    private CallableStatement cstm = null;
 
 //    public static void main(String[] args) {
 //        DBManager.getInst().initDB();
