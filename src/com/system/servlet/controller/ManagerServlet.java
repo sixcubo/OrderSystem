@@ -5,6 +5,8 @@ package com.system.servlet.controller;
  * @create 2021/01/11/15:25
  */
 
+import com.system.servlet.database.DBManager;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -15,6 +17,15 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 
 public class ManagerServlet extends HttpServlet {
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        DBManager.getInst().initDB();;
+        DBManager.getInst().connectDB();
+    }
+
     @java.lang.Override
     public void service(HttpServletRequest req, HttpServletResponse resp){
         try {
@@ -60,5 +71,15 @@ public class ManagerServlet extends HttpServlet {
     }
 
     private void toLogin(HttpServletRequest req, HttpServletResponse res) {
+
+
+        // set
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        DBManager.getInst().closeDB();
     }
 }

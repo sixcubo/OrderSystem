@@ -8,15 +8,15 @@ public class Dish {
     private int id;
     private String name;
     private String type;
-    private float price;
-    private String score;//评分
+    private double price;
+    private double score;
     private String comment;
     private String url;
 
     public Dish() {
     }
 
-    public Dish(int id, String name, String type, float price, String score, String comment, String url) {
+    public Dish(int id, String name, String type, double price, double score, String comment, String url) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -24,19 +24,6 @@ public class Dish {
         this.score = score;
         this.comment = comment;
         this.url = url;
-    }
-
-    @Override
-    public String toString() {
-        return "Dish{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                ", price='" + price + '\'' +
-                ", score='" + score + '\'' +
-                ", comment='" + comment + '\'' +
-                ", url='" + url + '\'' +
-                '}';
     }
 
     public int getId() {
@@ -63,19 +50,19 @@ public class Dish {
         this.type = type;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public String getScore() {
+    public double getScore() {
         return score;
     }
 
-    public void setScore(String score) {
+    public void setScore(double score) {
         this.score = score;
     }
 
@@ -93,5 +80,18 @@ public class Dish {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "Dish{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", price=" + price +
+                ", score=" + score +
+                ", comment='" + comment + '\'' +
+                ", url='" + url + '\'' +
+                '}';
     }
 }

@@ -1,44 +1,32 @@
 package com.system.beans;
 
-import javax.xml.crypto.Data;
-
 /**
  * @author nanfang
  * @create 2021/01/11/14:25
  */
 public class Order {
     private int id;
-    private int tableNum;
+    private int table;
     private String state;
-    private Data dateTime;
-    private String person;
-    private String price;
+    private String time;
+    private int personNum;
+    private double price;
     private int userId;
+    private int merchantId;
+
 
     public Order() {
     }
 
-    public Order(int id, int tableNum, String state, Data dateTime, String person, String price, int userId) {
+    public Order(int id, int table, String state, String time, int personNum, double price, int userId, int merchantId) {
         this.id = id;
-        this.tableNum = tableNum;
+        this.table = table;
         this.state = state;
-        this.dateTime = dateTime;
-        this.person = person;
+        this.time = time;
+        this.personNum = personNum;
         this.price = price;
         this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", tableNum=" + tableNum +
-                ", state='" + state + '\'' +
-                ", dateTime=" + dateTime +
-                ", person='" + person + '\'' +
-                ", price='" + price + '\'' +
-                ", userId=" + userId +
-                '}';
+        this.merchantId = merchantId;
     }
 
     public int getId() {
@@ -49,12 +37,12 @@ public class Order {
         this.id = id;
     }
 
-    public int getTableNum() {
-        return tableNum;
+    public int getTable() {
+        return table;
     }
 
-    public void setTableNum(int tableNum) {
-        this.tableNum = tableNum;
+    public void setTable(int table) {
+        this.table = table;
     }
 
     public String getState() {
@@ -65,27 +53,27 @@ public class Order {
         this.state = state;
     }
 
-    public Data getDateTime() {
-        return dateTime;
+    public String getTime() {
+        return time;
     }
 
-    public void setDateTime(Data dateTime) {
-        this.dateTime = dateTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getPerson() {
-        return person;
+    public int getPersonNum() {
+        return personNum;
     }
 
-    public void setPerson(String person) {
-        this.person = person;
+    public void setPersonNum(int personNum) {
+        this.personNum = personNum;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -95,5 +83,27 @@ public class Order {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(int merchantId) {
+        this.merchantId = merchantId;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", table=" + table +
+                ", state='" + state + '\'' +
+                ", time='" + time + '\'' +
+                ", personNum=" + personNum +
+                ", price=" + price +
+                ", userId=" + userId +
+                ", merchantId=" + merchantId +
+                '}';
     }
 }

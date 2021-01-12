@@ -1,6 +1,6 @@
 package com.system.servlet.service;
 
-import com.system.beans.Manager;
+import com.system.beans.Merchant;
 import com.system.servlet.Dao.service.ManagerServiceInterface;
 
 /**
@@ -9,22 +9,22 @@ import com.system.servlet.Dao.service.ManagerServiceInterface;
  */
 public class ManagerService implements ManagerServiceInterface {
     @Override
-    public String loginService(Manager manager) {
+    public String loginService(Merchant merchant) {
         return null;
     }
 
     @Override
-    public String registerService(Manager manager) {
+    public String registerService(Merchant merchant) {
         return null;
     }
 
     @Override
-    public String deleteManagerService(Manager manager) {
+    public String deleteManagerService(Merchant merchant) {
         return null;
     }
 
     @Override
-    public String updateManagerService(Manager oldManager, Manager newManager) {
+    public String updateManagerService(Merchant oldMerchant, Merchant newMerchant) {
         return null;
     }
 }
