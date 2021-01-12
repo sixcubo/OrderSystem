@@ -4,16 +4,17 @@ package com.system.beans;
  * @author nanfang
  * @create 2021/01/11/14:14
  */
-public class Users {
+public class User {
     private int id;
     private String account;
     private String password;
     private String tel;
     private String email;
-    public Users() {
+
+    public User() {
     }
 
-    public Users(int id, String account, String password, String tel, String email) {
+    public User(int id, String account, String password, String tel, String email) {
         this.id = id;
         this.account = account;
         this.password = password;
