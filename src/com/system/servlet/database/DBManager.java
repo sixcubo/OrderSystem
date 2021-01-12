@@ -2,6 +2,7 @@ package com.system.servlet.database;
 
 import com.system.beans.Dish;
 import com.system.beans.Order;
+import com.system.beans.User;
 
 import javax.net.ssl.CertPathTrustManagerParameters;
 import java.sql.*;
@@ -25,7 +26,7 @@ public class DBManager {
     } // 获取单例
 
     private Connection conn = null;
-    private Statement stmt = null;
+//    private Statement stmt = null;
 
     public void initDB() {
         try {
@@ -42,17 +43,7 @@ public class DBManager {
 
         try {
             conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-            stmt = conn.createStatement();
-
-//            ResultSet res = null;
-//            res = stat.executeQuery("select * from tb_dish");
-//
-//            while (res.next()) {
-//                int _id = res.getInt("dish_id");
-//                System.out.println(_id);
-//            }
-//            res.close();
-
+//            stmt = conn.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -60,9 +51,9 @@ public class DBManager {
 
     public void closeDB() {
         try {
-            if (stmt != null) {
-                stmt.close();
-            }
+//            if (stmt != null) {
+//                stmt.close();
+//            }
             if (conn != null) {
                 conn.close();
             }
@@ -89,11 +80,14 @@ public class DBManager {
      * @return -- ArrayList<Dish>
      */
     public ArrayList<Dish> selectAllDishes() {
-        ArrayList<Dish> dishes = null;
-        String sql = "SELECT * FROM tb_dish";
+        ArrayList<Dish> dishes = new ArrayList<>();
 
+        String sql = "SELECT * FROM tb_dish";
+        Statement stmt = null;
+        ResultSet res = null;
         try {
-            ResultSet res = this.stmt.executeQuery(sql);
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
 
             while (res.next()) {
                 int id = res.getInt("id");
@@ -109,8 +103,22 @@ public class DBManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
         return dishes;
     }
 
@@ -153,7 +161,9 @@ public class DBManager {
             e.printStackTrace();
         } finally {
             try {
-                ptmt.close();
+                if (ptmt != null) {
+                    ptmt.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -200,13 +210,13 @@ public class DBManager {
             if (rows == 1) {
                 isSuccess = true;
             }
-
-
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             try {
-                ptmt.close();
+                if (ptmt != null) {
+                    ptmt.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -216,6 +226,7 @@ public class DBManager {
 
     /**
      * 通过id删除Dish
+     *
      * @param id -- 要删除的Dish的id
      * @return -- sql语句的执行结果, true/false
      */
@@ -236,14 +247,62 @@ public class DBManager {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        } finally {
+            try {
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return isSuccess;
     }
 
-//    public User selectUserByUsername(String username) {
-//
-//    }
-//
+    /**
+     * 根据username查询User
+     *
+     * @param username --
+     * @return --
+     */
+    public User selectUserByUsername(String username) {
+        User user = null;
+
+        String sql = "SELECT * FROM tb_user WHERE username='" + username + "'";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+
+            int id = res.getInt("id");
+            String password = res.getString("password");
+            String tel = res.getString("tel");
+            double money = res.getDouble("money");
+
+            user = new User(id, username, password, tel, money);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
+    }
+
 //    public ArrayList<User> selectAllUser() {
 //
 //    }
@@ -269,9 +328,27 @@ public class DBManager {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
 
-//        Dish dish = new Dish(8, "name5", "type", 5, 5, "comment", "url");
 
-        System.out.println(DBManager.getInst().deleteDishById(7));
-//        DBManager.getInst().selectAllDish();
+//        ArrayList<Dish> dishes = DBManager.getInst().selectAllDishes();
+//        for (Dish d : dishes) {
+//            System.out.println(d);
+//        }
+
+
+//        Dish dish = new Dish(5, "name7", "type", 5, 5, "comment", "url");
+//        System.out.println(DBManager.getInst().updateDish(dish));
+
+
+//        Dish dish = new Dish(9, "name7", "type", 5, 5, "comment", "url");
+//        System.out.println(DBManager.getInst().insertDish(dish));
+
+
+//        System.out.println(DBManager.getInst().deleteDishById(9));
+
+
+//        System.out.println(DBManager.getInst().selectUserByUsername("cxh"));
+
+
+//        DBManager.getInst().closeDB();
     }
 }
