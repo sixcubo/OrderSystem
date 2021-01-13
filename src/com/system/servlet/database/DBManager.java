@@ -4,8 +4,6 @@ import com.system.beans.Dish;
 import com.system.beans.Order;
 import com.system.beans.User;
 
-import javax.sound.midi.Soundbank;
-import javax.swing.plaf.ToolBarUI;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -66,16 +64,16 @@ public class DBManager {
     }
 
 
-    // 全局商家id
-    private String merchantId = null;
-
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
-    }
-
-    public String getMerchantId() {
-        return merchantId;
-    }
+//    // 全局商家id
+//    private String merchantId = null;
+//
+//    public void setMerchantId(String merchantId) {
+//        this.merchantId = merchantId;
+//    }
+//
+//    public String getMerchantId() {
+//        return merchantId;
+//    }
 
     /**
      * 查询所有 Dish
@@ -510,6 +508,7 @@ public class DBManager {
 
     /**
      * 根据TableNO查询Order
+     *
      * @param TableNO
      * @return
      */
@@ -554,11 +553,172 @@ public class DBManager {
         return order;
     }
 
+
+    /**
+     * 根据类型(type)查询对应的所有菜品(Dish)
+     *
+     * @param type -- 要查找的类型(type)
+     * @return -- 此类型的所有菜品(Dish)
+     */
+    public ArrayList<Dish> selectDishesByType(String type) {
+        ArrayList<Dish> dishes = new ArrayList<Dish>();
+
+        String sql = "SELECT * FROM tb_dish WHERE type='" + type + "'";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+
+            while (res.next()) {
+                int id = res.getInt("id");
+                String name = res.getString("name");
+//                String type = res.getString("type");
+                double price = res.getDouble("price");
+                double score = res.getDouble("score");
+                String comment = res.getString("comment");
+                String url = res.getString("url");
+
+                Dish dish = new Dish(id, name, type, price, score, comment, url);
+                dishes.add(dish);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (res != null) {
+                res.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dishes;
+    }
+
+    /**
+     * 根据客人用户名(username)查找所有订单(Order)
+     *
+     * @param username -- 要查找的客人的用户名(username)
+     * @return -- 此客人的所有订单(Order)
+     */
+    public ArrayList<Order> selectOrdersByUsername(String username) {
+        ArrayList<Order> orders = new ArrayList<>();
+
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+
+            String sql0 = "SELECT id FROM tb_user WHERE username='" + username + "'";
+            res = stmt.executeQuery(sql0);
+            res.next();
+            int id = res.getInt("id");
+
+            String sql1 = "SELECT * FROM tb_order WHERE user_id='" + id + "'";
+            res = stmt.executeQuery(sql1);
+            while (res.next()) {
+//                int id = res.getInt("id");
+                int tableNO = res.getInt("tableNO");
+                String state = res.getString("state");
+                String time = res.getString("time").toString();
+                int personNum = res.getInt("person_num");
+                double price = res.getDouble("price");
+                int userId = res.getInt("user_id");
+                int merchantId = res.getInt("merchant_id");
+
+                Order order = new Order(id, tableNO, state, time, personNum, price, userId, merchantId);
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return orders;
+    }
+
+    /**
+     * 使用部分菜名(subName)模糊搜索菜品(Dish)
+     *
+     * @param subName -- 部分菜名
+     * @return -- 菜名中包含 subName 的所有菜品(Dish)
+     */
+    public ArrayList<Dish> selectDishesBySubName(String subName) {
+        ArrayList<Dish> dishes = new ArrayList<>();
+
+        String sql = "SELECT * FROM tb_dish WHERE name like '%" + subName + "%'";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                String name = res.getString("name");
+                String type = res.getString("type");
+                double price = res.getDouble("price");
+                double score = res.getDouble("score");
+                String comment = res.getString("comment");
+                String url = res.getString("url");
+
+                Dish dish = new Dish(id, name, type, price, score, comment, url);
+                dishes.add(dish);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dishes;
+    }
+
+    /**
+     * 根据桌号查询桌信息
+     * @param args
+     */
+
+    /**
+     * 查询所有桌信息
+     *
+     * @param args
+     */
 //    public ArrayList<>
 
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
+
+//        ArrayList<Dish> dishes = DBManager.getInst().selectDishesBySubName("n");
+//        for (Dish d : dishes) {
+//            System.out.println(d);
+//        }
+
+//        ArrayList<Dish> dishes = DBManager.getInst().selectDishesByType("type");
+//        for (Dish d : dishes) {
+//            System.out.println(d);
+//        }
 
 //        ArrayList<Dish> dishes = DBManager.getInst().selectAllDishes();
 //        for (Dish d : dishes) {
@@ -602,9 +762,17 @@ public class DBManager {
 //        }
 
 
+//        ArrayList<Order> orders = DBManager.getInst().selectOrdersByUsername("cxh");
+//        for (Order o : orders) {
+//            System.out.println(o);
+//        }
+
+
 //        System.out.println(DBManager.getInst().selectOrderByTableNO(10));
 
 
 //        DBManager.getInst().closeDB();
+
+
     }
 }
