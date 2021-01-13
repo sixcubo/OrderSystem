@@ -6,7 +6,7 @@ package com.system.beans;
  */
 public class Order {
     private int id;
-    private int table;
+    private int tableNO;
     private String state;
     private String time;
     private int personNum;
@@ -19,9 +19,9 @@ public class Order {
 
     }
 
-    public Order(int id, int table, String state, String time, int personNum, double price, int userId, int merchantId) {
+    public Order(int id, int tableNO, String state, String time, int personNum, double price, int userId, int merchantId) {
         this.id = id;
-        this.table = table;
+        this.tableNO = tableNO;
         this.state = state;
         this.time = time;
         this.personNum = personNum;
@@ -38,12 +38,12 @@ public class Order {
         this.id = id;
     }
 
-    public int getTable() {
-        return table;
+    public int getTableNO() {
+        return tableNO;
     }
 
-    public void setTable(int table) {
-        this.table = table;
+    public void setTableNO(int tableNO) {
+        this.tableNO = tableNO;
     }
 
     public String getState() {
@@ -98,7 +98,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "id=" + id +
-                ", table=" + table +
+                ", tableNO=" + tableNO +
                 ", state='" + state + '\'' +
                 ", time='" + time + '\'' +
                 ", personNum=" + personNum +
