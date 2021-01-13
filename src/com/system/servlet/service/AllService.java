@@ -29,36 +29,9 @@ public class AllService {
      * 用户登录,判断密码是否相等
      * */
     public void loginService(HttpServletRequest request, HttpServletResponse response, User user){
-        user.setUsername(request.getParameter("username"));
-        user.setPassword(request.getParameter("password"));
-        String password=user.getPassword();
-        //****测试使用
-        System.out.println(user);
-        DBManager.getInst().initDB();
-        DBManager.getInst().connectDB();
-        //****
-        this.user=DBManager.getInst().selectUserByUsername(user.getUsername());
-        try {
-            if(this.user!=null&&password.equals(this.user.getPassword())){
-                response.getWriter().print("true");
-            } else{
-                response.getWriter().print("false");
-            }
-        }catch (IOException e) {
-            System.out.println("loginService中response错误");
-            e.printStackTrace();
-        }
+
     }
-    /*
-     * 用户注册
-     * */
-    public void registerService(HttpServletRequest request, HttpServletResponse response,User user){
-        try {
-            response.getWriter().print("true");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
     /*
      * 删除用户
      * */
@@ -82,22 +55,6 @@ public class AllService {
     }
 
 
-    //****************************************与商家相关操作***********************************
-    public void loginService(HttpServletRequest request, HttpServletResponse response, Merchant merchant) {
-        //****测试使用
-        System.out.println(merchant);
-        DBManager.getInst().initDB();
-        DBManager.getInst().connectDB();
-        //****
-        try {
-            response.getWriter().print("true");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void registerService(HttpServletRequest request, HttpServletResponse response,Merchant merchant) {
-
-    }
 
     public void deleteMerchantService(HttpServletRequest request, HttpServletResponse response,Merchant merchant){
     }

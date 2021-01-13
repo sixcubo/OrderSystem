@@ -5,6 +5,7 @@ package com.system.servlet.controller;
  * @create 2021/01/11/15:25
  */
 
+import com.system.beans.Dish;
 import com.system.beans.Merchant;
 import com.system.beans.Order;
 import com.system.servlet.database.DBManager;
@@ -19,10 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MerchantServlet extends HttpServlet {
-    private String address="";
-    private static Merchant merchant=new Merchant();
+    private String address="http://127.0.0.1:8080/";
     private HttpSession httpSession;
-    //private static MerchantService merchantService=new MerchantService();
 
     @Override
     public void init() throws ServletException {
@@ -35,30 +34,145 @@ public class MerchantServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp){
         try {
+            DBManager.getInst().initDB();
+            DBManager.getInst().connectDB();
             req.setCharacterEncoding("utf-8");
             String method = req.getParameter("method");
             if(method!=null) {
-                if (method.equals("login")) {
-                    toLogin(req,resp);
-                }else if (method.equals("register")) {
-                    toReg(req,resp);
-                }else if(method.equals("update")) {
-                    toUpdatePassword(req,resp);
-                }else if(method.equals("add")){
-                    toAdd(req,resp);
-                }else if(method.equals("delete")){
-                    toDel(req,resp);
-                }else if(method.equals("search")){
-                    toSelect(req,resp);
-                }else if(method.equals("selectAll")){
-                    toSelectAll(req,resp);
-                }else {
-                    resp.getWriter().print("调用方法错误");
+                switch (method){
+                    case "login":toLogin(req,resp);break;
+                    case "register":toReg(req, resp);break;
+                    case "update":toUpdatePassword(req, resp);break;
+                    case "add": toAdd(req, resp);break;
+                    case "delete":toDel(req, resp);break;
+                    //foodList相关方法
+                    case "showfoodlist":;break;
+                    case "searchfood":;break;
+                    case "massdelete":;break;
+                    case "deletefood":;break;
+                    //Boardlist相关方法
+                    case "showboardlist":;break;
+                    case "toboardlist":;break;
+                    case "addboard":;break;
+                    //OrderList相关
+                    case "toorderlist":;break;
+                    case "searchorder":;break;
+                    case "showorderlist":;break;
+                    case "todetail":;break;
+                    default:
+                        System.out.println("方法调用错误");
+                        break;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //*********************footList相关方法******************
+
+    /**
+     * 从数据库中查找得到所有菜品封装为Dish，存入ArrayList<Dish> bg_foods中
+     * @param req
+     * @param resp 不返回数据
+     */
+    public void showFootList(HttpServletRequest req, HttpServletResponse resp) {
+        httpSession=req.getSession();
+        ArrayList<Dish>dishList=DBManager.getInst().selectAllDishes();
+        if(!dishList.isEmpty()){
+            httpSession.setAttribute("bg_foods",dishList);
+        }else{
+            httpSession.setAttribute("bg_foods","");
+        }
+    }
+
+    /**
+     * 从数据库中查找得到所有菜名与name有关的菜品
+     * （模糊查找，如name=白,可以查出“开水煮白菜”，“白斩鸡”）封装为Dish，存入ArrayList<Dish> bg_foods中
+     * @param req
+     * @param resp 查找成功返回“true” , 否则“false”
+     */
+    public void serchFood(HttpServletRequest req, HttpServletResponse resp) {
+        httpSession=req.getSession();
+        ArrayList<Dish>dishList=DBManager.getInst().selectDishesByName();
+        if(!dishList.isEmpty()){
+            httpSession.setAttribute("bg_foods",dishList);
+            resp.getWriter().print("true");
+        }else{
+            resp.getWriter().print("false");
+        }
+    }
+
+    /**
+     *  根据多个菜的id 同时删除菜品 并将数据库中剩余菜品封装为Dish存入session
+     * @param req 从前端获取多个id 接收数据data（多个菜名用逗号隔开的字符串）
+     * @param resp 返回true或false
+     */
+    public void massdelete(HttpServletRequest req, HttpServletResponse resp) {
+        httpSession=req.getSession();
+        String []data=req.getParameterValues("data[]");
+        try {
+            if(data.length>0&&DBManager.getInst().deleteDishByIds(data)){
+                ArrayList<Dish>dishList=DBManager.getInst().selectAllDishes();
+                httpSession.setAttribute("foods",dishList);
+                resp.getWriter().print("true");
+            }else{
+                resp.getWriter().print("false");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 删除菜名为name的菜品后，从数据库中查找剩余菜品封装为Dish，存入ArrayList<Dish> bg_foods中
+     * @param req 根据 ‘id' 得到需要删除菜的id
+     * @param resp  查找成功返回“true” , 否则“false”
+     */
+    public void deleteFood(HttpServletRequest req, HttpServletResponse resp) {
+        httpSession=req.getSession();
+        int dishId=Integer.parseInt(req.getParameter("id"));
+        try {
+            if(DBManager.getInst().deleteDishById(dishId)){
+                ArrayList<Dish> dishList=DBManager.getInst().selectAllDishes();
+                resp.getWriter().print("true");
+            }else{
+                resp.getWriter().print("false");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    //**************************BoardList相关方法************************
+
+    /**
+     * 查找数据库中所有状态为state餐桌，封装成为Board，存入ArrayList<Board> bg_boards中
+     * @param req 根据 ‘state' 得到所有状态为state的餐桌
+     * @param resp 查找成功返回“true”  , 否则返回“false”
+     */
+    public void showBoardList(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    public void toBoardList(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    public void addBoard(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    //*********************OrderList相关*************************
+    public void toorDerList(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    public void serchOrder(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    public void showOrderList(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
+    public void toDetail(HttpServletRequest req, HttpServletResponse resp) {
+
     }
     /*
     * 查找单个商家信息，根据商家名
@@ -88,27 +202,58 @@ public class MerchantServlet extends HttpServlet {
     * 修改商家密码
     * */
     private void toUpdatePassword(HttpServletRequest req, HttpServletResponse resp) {
-        merchant.setUsername(req.getParameter("username"));
-        merchant.setPassword(req.getParameter("password"));
-        Merchant newMerchant=new Merchant();
-        newMerchant.setUsername(merchant.getUsername());
-        newMerchant.setPassword(req.getParameter("newPassword"));
-        AllService.getInst().updateMerchantService(req,resp,merchant,newMerchant);
+        String username =req.getParameter("username");
+        String passwrod=req.getParameter("password");
+        Merchant merchant=new Merchant();
+        merchant.setPassword(passwrod);
+        merchant.setUsername(username);
+        try {
+            if(DBManager.getInst().updateMerchant(merchant)){
+                response.getWriter().print("true");
+            }else{
+                response.getWriter().print("false");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-
-
+    /**
+     * 申请商家账号
+     * @param req
+     * @param resp
+     */
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("username"));
         merchant.setPassword(req.getParameter("password"));
-        AllService.getInst().registerService(req,resp,merchant);
+        try {
+            if(DBManager.getInst().insertMerchat()){
+                response.getWriter().print("true");
+            }else{
+                response.getWriter().print("false");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
+    /**
+     * 前端提供用户名和密码，后端根据用户名查找密码和前端提供密码进行比对
+     * @param req
+     * @param res
+     */
     private void toLogin(HttpServletRequest req, HttpServletResponse res) {
-        merchant.setPassword(req.getParameter("password"));
-        merchant.setUsername(req.getParameter("username"));
-        AllService.getInst().loginService(req,res,merchant);
-        // set
+        System.out.println("toLogin");
+        String username=req.getParameter("username");
+        String password=req.getParameter("password");
+        if(password.equals(DBManager.getInst().selectMerchantPassword(username))){
+            try {
+                response.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     private void toSelectAll(HttpServletRequest req, HttpServletResponse res) {
         AllService.getInst().selectMerchantAll(req,res);
