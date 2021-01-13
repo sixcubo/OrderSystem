@@ -20,7 +20,7 @@ public class DishServlet extends HttpServlet {
         switch(method){
             case "uploadPicture":PictureProcess.upload(req,resp);
             case "deletePicture":PictureProcess.deletePicture(req,resp);
-
+            //case "deleteDishById":
         }
     }
 }

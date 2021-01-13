@@ -7,13 +7,12 @@ import com.system.servlet.service.UserService;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.regex.Pattern;
 
 /**
  * @author cxh
  * @create 2021/01/11/15:25
  */
+
 public class UserServlet extends HttpServlet {
     private static User user=new User();
     private static UserService userService=new UserService();
