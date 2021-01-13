@@ -33,11 +33,10 @@ public class UserService  {
             } else{
                 response.getWriter().print("false");
             }
-        } catch (IOException e) {
+        }catch (IOException e) {
             System.out.println("loginService中response错误");
             e.printStackTrace();
         }
-
     }
     /*
     * 用户注册

@@ -14,6 +14,7 @@ import java.io.PrintWriter;
  * @declare 拦截器
  */
 public class WebFilter implements Filter {
+    private int num=0;
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         System.out.println("init");
@@ -26,13 +27,15 @@ public class WebFilter implements Filter {
         servletResponse.setContentType("utf-8");
         HttpServletRequest request=(HttpServletRequest)servletRequest;
         HttpServletResponse response=(HttpServletResponse)servletResponse;
-        //将登录状态存入session中
-        HttpSession session = request.getSession();
-        if(session.getAttribute("flag")==null){
-            PrintWriter out = response.getWriter();
-            out.print("<script type='text/javascript'>alert('非法访问，请登录！');" +
-                    "location='http://localhost:8080/index.jsp'; charset='UTF-8';</script>");
-        }
+        System.out.println("filter:"+num);        //将登录状态存入session中
+        num++;
+        filterChain.doFilter(request, response);//放行
+//        HttpSession session = request.getSession();
+//        if(session.getAttribute("flag")==null){
+//            PrintWriter out = response.getWriter();
+//            out.print("<script type='text/javascript'>alert('非法访问，请登录！');" +
+//                    "location='http://localhost:8080/index.jsp'; charset='UTF-8';</script>");
+//        }
     }
 
     @Override

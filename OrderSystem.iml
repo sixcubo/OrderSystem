@@ -34,5 +34,7 @@
     <orderEntry type="library" name="servlet-api" level="project" />
     <orderEntry type="library" name="commons-beanutils-1.9.3" level="project" />
     <orderEntry type="library" name="junit-4.12" level="project" />
+    <orderEntry type="library" name="jsp-api" level="project" />
+    <orderEntry type="library" name="fastjson-1.1.27" level="project" />
   </component>
 </module>
