@@ -2,20 +2,18 @@ package com.system.servlet.controller;
 
 
 import com.system.beans.User;
-import com.system.servlet.service.UserService;
+import com.system.servlet.service.AllService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author cxh
+ * @author nanfang
  * @create 2021/01/11/15:25
  */
-
 public class UserServlet extends HttpServlet {
     private static User user=new User();
-    private static UserService userService=new UserService();
     @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) {
         try {
@@ -50,7 +48,7 @@ public class UserServlet extends HttpServlet {
         user.setUsername(req.getParameter("username"));
         user.setPassword(req.getParameter("password"));
         user.setTel(req.getParameter("tel"));
-        userService.registerService(req,resp,user);
+        AllService.getInst().registerService(req,resp,user);
     }
 
     /*
@@ -59,7 +57,7 @@ public class UserServlet extends HttpServlet {
     private void toPay(HttpServletRequest req, HttpServletResponse resp) {
         user.setUsername(req.getParameter("username"));
         int consume=Integer.parseInt(req.getParameter("consume"));//得到今日消费总钱数
-        userService.updateUserService(req,resp,user,consume);
+        AllService.getInst().updateUserService(req,resp,user,consume);
     }
 
     /*
@@ -67,19 +65,19 @@ public class UserServlet extends HttpServlet {
     * */
     private void toSearch(HttpServletRequest req, HttpServletResponse resp) {
         user.setUsername(req.getParameter("username"));
-        userService.selectUserService(req,resp,user);
+        AllService.getInst().selectUserService(req,resp,user);
     }
     /*
     * 查找所有用户数据
     * */
     private void toShow(HttpServletRequest req, HttpServletResponse resp) {
-        userService.selectUserAllService(req,resp,user);
+        AllService.getInst().selectUserAllService(req,resp,user);
     }
     private void toLogin(HttpServletRequest req, HttpServletResponse resp) {
         //username 为前端传送过来的用户名数据 password 为密码
         user.setUsername(req.getParameter("username"));
         user.setPassword(req.getParameter("password"));
-        userService.loginService(req,resp,user);
+        AllService.getInst().loginService(req,resp,user);
         // TODO: 连接数据库
     }
 }

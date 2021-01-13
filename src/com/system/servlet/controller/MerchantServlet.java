@@ -1,24 +1,28 @@
 package com.system.servlet.controller;
 
 /**
- * @author cxh
+ * @author nanfang
  * @create 2021/01/11/15:25
  */
 
 import com.system.beans.Merchant;
+import com.system.beans.Order;
 import com.system.servlet.database.DBManager;
-import com.system.servlet.service.MerchantService;
+import com.system.servlet.service.AllService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MerchantServlet extends HttpServlet {
-
+    private String address="";
     private static Merchant merchant=new Merchant();
-    private static MerchantService merchantService=new MerchantService();
+    private HttpSession httpSession;
+    //private static MerchantService merchantService=new MerchantService();
 
     @Override
     public void init() throws ServletException {
@@ -61,7 +65,7 @@ public class MerchantServlet extends HttpServlet {
     * */
     private void toSelect(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("name"));
-        merchantService.selectMerchant(req,resp,merchant);
+        AllService.getInst().selectMerchant(req,resp,merchant);
     }
 
     /*
@@ -69,7 +73,7 @@ public class MerchantServlet extends HttpServlet {
     * */
     private void toDel(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("username"));
-        merchantService.deleteMerchantService(req,resp,merchant);
+        AllService.getInst().deleteMerchantService(req,resp,merchant);
     }
     /*
     * 添加一个商家
@@ -77,7 +81,7 @@ public class MerchantServlet extends HttpServlet {
     private void toAdd(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("username"));
         merchant.setPassword(req.getParameter("password"));
-        merchantService.insertMerchant(req,resp,merchant);
+        AllService.getInst().insertMerchant(req,resp,merchant);
     }
 
     /*
@@ -89,7 +93,7 @@ public class MerchantServlet extends HttpServlet {
         Merchant newMerchant=new Merchant();
         newMerchant.setUsername(merchant.getUsername());
         newMerchant.setPassword(req.getParameter("newPassword"));
-        merchantService.updateMerchantService(req,resp,merchant,newMerchant);
+        AllService.getInst().updateMerchantService(req,resp,merchant,newMerchant);
     }
 
 
@@ -97,23 +101,42 @@ public class MerchantServlet extends HttpServlet {
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
         merchant.setUsername(req.getParameter("username"));
         merchant.setPassword(req.getParameter("password"));
-        merchantService.registerService(req,resp,merchant);
+        AllService.getInst().registerService(req,resp,merchant);
     }
 
     private void toLogin(HttpServletRequest req, HttpServletResponse res) {
         merchant.setPassword(req.getParameter("password"));
         merchant.setUsername(req.getParameter("username"));
-        merchantService.loginService(req,res,merchant);
+        AllService.getInst().loginService(req,res,merchant);
         // set
     }
     private void toSelectAll(HttpServletRequest req, HttpServletResponse res) {
-        merchantService.selectMerchantAll(req,res);
+        AllService.getInst().selectMerchantAll(req,res);
     }
 
     @Override
     public void destroy() {
         super.destroy();
-
         DBManager.getInst().closeDB();
+    }
+
+    /**
+     * 向前端传输所有的订单数据
+     */
+    public void showBoardList(HttpServletRequest request, HttpServletResponse response) {
+        httpSession = request.getSession();
+        ArrayList<Order> orders = DBManager.getInst().selectAllOrders();
+        httpSession.setAttribute("bg_foods", orders);
+    }
+
+    /*
+     * 重定向至orderList.jsp界面
+     * */
+    public void toOrderList(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            response.sendRedirect(address + "jsp/list.jsp");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

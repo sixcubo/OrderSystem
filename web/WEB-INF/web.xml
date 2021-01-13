@@ -23,15 +23,6 @@
 		<servlet-name>user</servlet-name>
 		<url-pattern>/user</url-pattern>
 	</servlet-mapping>
-    <!--处理菜品接口-->
-    <servlet>
-        <servlet-name>dish</servlet-name>
-        <servlet-class>com.system.servlet.controller.DishServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>dish</servlet-name>
-        <url-pattern>/dish</url-pattern>
-    </servlet-mapping>
 
 	<!--配置拦截器,拦截登录接口-->
 	<filter>
