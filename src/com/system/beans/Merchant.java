@@ -5,17 +5,17 @@ package com.system.beans;
  * @create 2021/01/11/14:29
  */
 public class Merchant {
+    private int id;
     private String username;
     private String password;
-    private int id;
 
     public Merchant() {
     }
 
-    public Merchant(String username, String password, int id) {
+    public Merchant(int id, String username, String password) {
+        this.id = id;
         this.username = username;
         this.password = password;
-        this.id = id;
     }
 
     public String getUsername() {

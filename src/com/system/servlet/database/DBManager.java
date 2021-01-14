@@ -1,9 +1,6 @@
 package com.system.servlet.database;
 
-import com.system.beans.Dish;
-import com.system.beans.Order;
-import com.system.beans.Table;
-import com.system.beans.User;
+import com.system.beans.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -586,16 +583,17 @@ public class DBManager {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        try {
-            if (res != null) {
-                res.close();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            if (stmt != null) {
-                stmt.close();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return dishes;
     }
@@ -699,7 +697,7 @@ public class DBManager {
     /**
      * 根据桌号查找桌信息
      *
-     * @param TableNO
+     * @param tableNO
      * @return
      */
     public Table selectTableByTableNO(int tableNO) {
@@ -883,12 +881,175 @@ public class DBManager {
         return isSuccess;
     }
 
+    /**
+     * 根据订单号，计算该订单所有菜的总价钱
+     *
+     * @param orderId
+     * @return
+     */
+    public double selectMoneyByOrderId(int orderId) {
+        double sum = 0;
 
+        String sql = "SELECT price FROM tb_order WHERE id=" + orderId;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+            sum = res.getDouble("price");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return sum;
+    }
 
+    /**
+     * 根据商家账号查找密码
+     *
+     * @param username
+     * @return
+     */
+    public String selectMerchantPassword(String username) {
+        String password = "";
+
+        String sql = "SELECT password FROM tb_merchant WHERE username='" + username + "'";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+            password = res.getString("password");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return password;
+    }
+
+    /**
+     * 修改商家信息
+     *
+     * @param merchant
+     * @return
+     */
+    public boolean updateMerchant(Merchant merchant) {
+        boolean isSuccess = false;
+
+        String username = merchant.getUsername();
+        String password = merchant.getPassword();
+        int id = merchant.getId();
+
+        String sql = "UPDATE tb_merchant " +
+                "SET username='" + username + "', password='" + password + "'" +
+                "WHERE id=" + id;
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            int rows = stmt.executeUpdate(sql);
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 查询订单的所有菜品
+     *
+     * @param order
+     * @return
+     */
+    public ArrayList<Dish> selectDishesByOrder(Order order) {
+        ArrayList<Dish> dishes = new ArrayList<Dish>();
+
+        int orderId = order.getId();
+        String sql = "SELECT * FROM tb_dish, tb_order_detail " +
+                "WHERE tb_order_detail.order_id=" + orderId +
+                " AND tb_order_detail.dish_id=tb_dish.id";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                String name = res.getString("name");
+                String type = res.getString("type");
+                double price = res.getDouble("price");
+                double score = res.getDouble("score");
+                String comment = res.getString("comment");
+                String url = res.getString("url");
+
+                Dish dish = new Dish(id, name, type, price, score, comment, url);
+                dishes.add(dish);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return dishes;
+    }
 
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
+
+        Order order = new Order();
+        order.setId(1);
+        ArrayList<Dish> dishes = DBManager.getInst().selectDishesByOrder(order);
+        for (Dish d : dishes) {
+            System.out.println(d);
+        }
+
+//        Merchant merchant = new Merchant(2, "cxhh", "cxhh");
+//        System.out.println(DBManager.getInst().updateMerchant(merchant));
+
+//        System.out.println(DBManager.getInst().selectMerchantPassword("root"));
+
+//        System.out.println(DBManager.getInst().selectMoneyByOrderId(1));
 
 //        System.out.println(DBManager.getInst().deleteOrderDetail(2, 2));
 
