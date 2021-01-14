@@ -8,8 +8,8 @@ package com.system.servlet.controller;
 import com.system.beans.Dish;
 import com.system.beans.Merchant;
 import com.system.beans.Order;
+import com.system.beans.Table;
 import com.system.servlet.database.DBManager;
-import com.system.servlet.service.AllService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -143,78 +143,170 @@ public class MerchantServlet extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
     //**************************BoardList相关方法************************
-
     /**
      * 查找数据库中所有状态为state餐桌，封装成为Board，存入ArrayList<Board> bg_boards中
      * @param req 根据 ‘state' 得到所有状态为state的餐桌
      * @param resp 查找成功返回“true”  , 否则返回“false”
      */
     public void showBoardList(HttpServletRequest req, HttpServletResponse resp) {
-
+        httpSession=req.getSession();
+        String state=req.getParameter("state");
+        ArrayList<Table> tableList=DBManager.getInst().selectTablesByState(state);
+        if(!tableList.isEmpty()){
+            httpSession.setAttribute("bg_boards",tableList);
+            try {
+                resp.getWriter().print("true");
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+    //疑问，通上一个函数
     public void toBoardList(HttpServletRequest req, HttpServletResponse resp) {
 
     }
+    /**
+     * 添加一个桌位
+     * @param req  接收数据 boardid , maxnum（新增一桌）
+     * @param resp 添加成功返回“true”  , 否则返回“false”
+     */
     public void addBoard(HttpServletRequest req, HttpServletResponse resp) {
-
+        String boardId =req.getParameter("boardid");
+        String maxNum=req.getParameter("maxnum");
+        if(DBManager.getInst().insertTable(boardId,maxNum,0,"空闲")){
+            try {
+                resp.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     //*********************OrderList相关*************************
-    public void toorDerList(HttpServletRequest req, HttpServletResponse resp) {
 
+    /**
+     * 查找数据库中所有状态为未完成的订单，封装成为Order，存入ArrayList<Order> bg_orders中
+     * @param req 接受数据无
+     * @param resp  重定向 http://127.0.0.1:8080/jsp/manage/details/orderList.jsp
+     */
+    public void toorDerList(HttpServletRequest req, HttpServletResponse resp) {
+        httpSession=req.getSession();
+        ArrayList<Order> orderList= DBManager.getInst().selectAllOrdersByState(0);
+        if(!orderList.isEmpty()){
+            try {
+                resp.sendRedirect(address + "jsp/manage/details/orderList.jsp");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     public void serchOrder(HttpServletRequest req, HttpServletResponse resp) {
-
+        httpSession=req.getSession();
+        String username=req.getParameter("username");
+        ArrayList<Order>orderList=DBManager.getInst().selectOrderByUsername(username);
+        if(!orderList.isEmpty()){
+            try {
+                httpSession.setAttribute("bg_orders",orderList);
+                resp.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
+    /**
+     * 查找数据库中状态为type的订单，封装成为Order，存入ArrayList<Order> bg_orders中
+     * @param req 接受数据：type
+     * @param resp 查询成功返回“true”  , 查找失败返回“false”
+     */
     public void showOrderList(HttpServletRequest req, HttpServletResponse resp) {
+        String type=req.getParameter("type");
+        httpSession = req.getSession();
+        ArrayList<Order> orders = DBManager.getInst().selectOrdersBytype(type);
+        if(!orders.isEmpty()){
+            httpSession.setAttribute("bg_orders", orders);
+            try {
+                resp.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
+
+    /**
+     * 查找数据库中id为id的订单，封装成为Order，将此Order存入session中命名为bg_orderdetail
+     * @param req 接受数据：id
+     * @param resp 查询成功返回“true”  , 查找失败返回“false”
+     */
     public void toDetail(HttpServletRequest req, HttpServletResponse resp) {
-
-    }
-    /*
-    * 查找单个商家信息，根据商家名
-    * */
-    private void toSelect(HttpServletRequest req, HttpServletResponse resp) {
-        merchant.setUsername(req.getParameter("name"));
-        AllService.getInst().selectMerchant(req,resp,merchant);
-    }
-
-    /*
-    * 根据商家名删除该商家
-    * */
-    private void toDel(HttpServletRequest req, HttpServletResponse resp) {
-        merchant.setUsername(req.getParameter("username"));
-        AllService.getInst().deleteMerchantService(req,resp,merchant);
-    }
-    /*
-    * 添加一个商家
-    * */
-    private void toAdd(HttpServletRequest req, HttpServletResponse resp) {
-        merchant.setUsername(req.getParameter("username"));
-        merchant.setPassword(req.getParameter("password"));
-        AllService.getInst().insertMerchant(req,resp,merchant);
+        String id=req.getParameter("id");
+        httpSession = req.getSession();
+        ArrayList<Order> orders = DBManager.getInst().selectOrdersByid(id);
+        if(!orders.isEmpty()){
+            httpSession.setAttribute("bg_orders", orders);
+            try {
+                resp.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    /*
-    * 修改商家密码
-    * */
+
+    /**
+     * 修改商家密码
+     * @param req 获取用户名 username 和老密码 password  和新密码
+     * @param resp 返回true或false
+     */
     private void toUpdatePassword(HttpServletRequest req, HttpServletResponse resp) {
         String username =req.getParameter("username");
-        String passwrod=req.getParameter("password");
-        Merchant merchant=new Merchant();
-        merchant.setPassword(passwrod);
-        merchant.setUsername(username);
-        try {
-            if(DBManager.getInst().updateMerchant(merchant)){
-                response.getWriter().print("true");
-            }else{
-                response.getWriter().print("false");
+        String password=req.getParameter("password");
+        String newPassword=req.getParameter("newPassword");
+        if(DBManager.getInst().selectMerchantByName(username)==password){
+            DBManager.getInst().updateMerchant(username,newPassword);
+            try {
+                resp.getWriter().print("true");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else{
+            try {
+                resp.getWriter().print("false");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -224,13 +316,14 @@ public class MerchantServlet extends HttpServlet {
      * @param resp
      */
     private void toReg(HttpServletRequest req, HttpServletResponse resp) {
+        Merchant merchant=new Merchant();
         merchant.setUsername(req.getParameter("username"));
         merchant.setPassword(req.getParameter("password"));
         try {
-            if(DBManager.getInst().insertMerchat()){
-                response.getWriter().print("true");
+            if(DBManager.getInst().insertMerchat(merchant)){
+                resp.getWriter().print("true");
             }else{
-                response.getWriter().print("false");
+                resp.getWriter().print("false");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -249,30 +342,23 @@ public class MerchantServlet extends HttpServlet {
         String password=req.getParameter("password");
         if(password.equals(DBManager.getInst().selectMerchantPassword(username))){
             try {
-                response.getWriter().print("true");
+                res.getWriter().print("true");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    private void toSelectAll(HttpServletRequest req, HttpServletResponse res) {
-        AllService.getInst().selectMerchantAll(req,res);
-    }
 
+    /**
+     * 销毁数据库
+     */
     @Override
     public void destroy() {
         super.destroy();
         DBManager.getInst().closeDB();
     }
 
-    /**
-     * 向前端传输所有的订单数据
-     */
-    public void showBoardList(HttpServletRequest request, HttpServletResponse response) {
-        httpSession = request.getSession();
-        ArrayList<Order> orders = DBManager.getInst().selectAllOrders();
-        httpSession.setAttribute("bg_foods", orders);
-    }
+
 
     /*
      * 重定向至orderList.jsp界面

@@ -4,7 +4,6 @@ package com.system.servlet.controller;
 import com.system.beans.Dish;
 import com.system.beans.User;
 import com.system.servlet.database.DBManager;
-import com.system.servlet.service.AllService;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -62,9 +61,10 @@ public class UserServlet extends HttpServlet {
      */
     public void toShowMyOrder(HttpServletRequest req, HttpServletResponse res) {
         httpSession=req.getSession();
-        ArrayList<Dish> disheList=DBManager.getInst().selectDishsByOrder();
-        if(!disheList.isEmpty()){
-            httpSession.setAttribute("dishes",disheList);
+        String order=req.getParameter("order");
+        ArrayList<Dish> dishList=DBManager.getInst().selectDishsByOrder(order);
+        if(!dishList.isEmpty()){
+            httpSession.setAttribute("dishes",dishList);
         }else{
             httpSession.setAttribute("dishes","");
         }
@@ -161,7 +161,6 @@ public class UserServlet extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //ArrayList<Dish> dishList=DBManager.getInst().
     }
 
 
@@ -213,7 +212,7 @@ public class UserServlet extends HttpServlet {
      * @param res
      */
     public void toShowDetail(HttpServletRequest req, HttpServletResponse res) {
-        httpSession=req.getSession();=req.getSession();
+        httpSession=req.getSession();
         System.out.println("toShowDetail");
         Dish dish=DBManager.getInst().selectDishById(req.getParameter("id"));
         if(dish!=null){

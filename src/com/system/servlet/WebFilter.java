@@ -19,7 +19,6 @@ public class WebFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         System.out.println("init");
     }
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         servletRequest.setCharacterEncoding("utf-8");
