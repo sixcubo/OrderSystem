@@ -1033,16 +1033,108 @@ public class DBManager {
         return dishes;
     }
 
+    /**
+     * 查找数据库中所有状态为state餐桌
+     *
+     * @param state
+     * @return
+     */
+    public ArrayList<Table> selectTablesByState(String state) {
+        ArrayList<Table> tables = new ArrayList<>();
+
+        String sql = "SELECT * FROM tb_table WHERE state='" + state + "'";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                int tableNO = res.getInt("tableNO");
+                int maxPersonNum = res.getInt("maxPersonNum");
+                int personNum = res.getInt("personNum");
+//                String state = res.getString("state");
+                Table table = new Table(id, tableNO, maxPersonNum, personNum, state);
+                tables.add(table);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tables;
+    }
+
+    /**
+     * 插入 Table 信息, id 无需指定
+     * @param table
+     * @return
+     */
+    public boolean insertTable(Table table) {
+        boolean isSuccess = false;
+
+//        int id = table.getId();
+        int tableNO = table.getTableNO();
+        int maxPersonNum = table.getMaxPersonNum();
+        int personNum = table.getPersonNum();
+        String state = table.getState();
+
+        PreparedStatement ptmt = null;
+        String sql = "INSERT INTO tb_table(tableNO, maxPersonNum, personNum, state) " +
+                "VALUES(?, ?, ?, ?)";
+        try {
+            ptmt = conn.prepareStatement(sql);
+            ptmt.setInt(1, tableNO);
+            ptmt.setInt(2, maxPersonNum);
+            ptmt.setInt(3, personNum);
+            ptmt.setString(4, state);
+            int rows = ptmt.executeUpdate();
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
 
-        Order order = new Order();
-        order.setId(1);
-        ArrayList<Dish> dishes = DBManager.getInst().selectDishesByOrder(order);
-        for (Dish d : dishes) {
-            System.out.println(d);
-        }
+
+        Table table = new Table(0, 10, 8, 0, "state");
+        System.out.println(DBManager.getInst().insertTable(table));
+
+//        ArrayList<Table> tables = DBManager.getInst().selectTablesByState("空闲");
+//        for (Table t : tables) {
+//            System.out.println(t);
+//        }
+
+//        Order order = new Order();
+//        order.setId(1);
+//        ArrayList<Dish> dishes = DBManager.getInst().selectDishesByOrder(order);
+//        for (Dish d : dishes) {
+//            System.out.println(d);
+//        }
 
 //        Merchant merchant = new Merchant(2, "cxhh", "cxhh");
 //        System.out.println(DBManager.getInst().updateMerchant(merchant));
