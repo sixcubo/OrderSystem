@@ -2,10 +2,12 @@ package com.system.servlet.database;
 
 import com.system.beans.Dish;
 import com.system.beans.Order;
+import com.system.beans.Table;
 import com.system.beans.User;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.concurrent.SubmissionPublisher;
 
 
 /**
@@ -695,20 +697,211 @@ public class DBManager {
     }
 
     /**
-     * 根据桌号查询桌信息
-     * @param args
+     * 根据桌号查找桌信息
+     *
+     * @param TableNO
+     * @return
      */
+    public Table selectTableByTableNO(int tableNO) {
+        Table table = null;
+
+        String sql = "SELECT * FROM tb_table WHERE tableNO=" + tableNO;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+
+            int id = res.getInt("id");
+            int maxPersonNum = res.getInt("maxPersonNum");
+            int personNum = res.getInt("personNum");
+            String state = res.getString("state");
+            table = new Table(id, tableNO, maxPersonNum, personNum, state);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return table;
+    }
 
     /**
      * 查询所有桌信息
      *
-     * @param args
+     * @return
      */
-//    public ArrayList<>
+    public ArrayList<Table> selectAllTables() {
+        ArrayList<Table> tables = new ArrayList<>();
+
+        String sql = "SELECT * FROM tb_table";
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                int tableNO = res.getInt("tableNO");
+                int maxPersonNum = res.getInt("maxPersonNum");
+                int personNum = res.getInt("personNum");
+                String state = res.getString("state");
+                Table table = new Table(id, tableNO, maxPersonNum, personNum, state);
+                tables.add(table);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return tables;
+    }
+
+    /**
+     * 根据菜的id查询菜品的详细信息
+     *
+     * @param id
+     * @return
+     */
+    public Dish selectDishById(int id) {
+        Dish dish = null;
+
+        String sql = "SELECT * FROM tb_dish WHERE id=" + id;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+
+            res.next();
+//            int id = res.getInt("id");
+            String name = res.getString("name");
+            String type = res.getString("type");
+            double price = res.getDouble("price");
+            double score = res.getDouble("score");
+            String comment = res.getString("comment");
+            String url = res.getString("url");
+
+            dish = new Dish(id, name, type, price, score, comment, url);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (res != null) {
+                res.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return dish;
+    }
+
+    /**
+     * 插入订单详情表
+     *
+     * @param orderId
+     * @param dishId
+     * @return
+     */
+    public boolean insertOrderDetail(int orderId, int dishId) {
+        boolean isSuccess = false;
+
+        String sql = "INSERT INTO tb_order_detail(order_id, dish_id) " +
+                "VALUES('" + orderId + "', '" + orderId + "')";
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            int rows = stmt.executeUpdate(sql);
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 已选订单中删除菜的操作
+     *
+     * @param orderId
+     * @param dishId
+     * @return
+     */
+    public boolean deleteOrderDetail(int orderId, int dishId) {
+        boolean isSuccess = false;
+
+        String sql = "DELETE FROM tb_order_detail " +
+                "WHERE order_id=" + orderId + " AND dish_id=" + dishId + "";
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            int rows = stmt.executeUpdate(sql);
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+
+
 
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
+
+//        System.out.println(DBManager.getInst().deleteOrderDetail(2, 2));
+
+//        System.out.println(DBManager.getInst().insertOrderDetail(2, 2));
+
+//        System.out.println(DBManager.getInst().selectDishById(5));
+
+//        ArrayList<Table> tables = DBManager.getInst().selectAllTables();
+//        for (Table t : tables) {
+//            System.out.println(t);
+//        }
+
+//        System.out.println(DBManager.getInst().selectTableByTableNO(5));
 
 //        ArrayList<Dish> dishes = DBManager.getInst().selectDishesBySubName("n");
 //        for (Dish d : dishes) {

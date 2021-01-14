@@ -6,7 +6,7 @@ package com.system.beans;
  */
 public class Table {
     private int id;
-    private int tableID;
+    private int tableNO;
     private int maxPersonNum;
     private int personNum;
     private String state;
@@ -14,9 +14,9 @@ public class Table {
     public Table() {
     }
 
-    public Table(int id, int tableID, int maxPersonNum, int personNum, String state) {
+    public Table(int id, int tableNO, int maxPersonNum, int personNum, String state) {
         this.id = id;
-        this.tableID = tableID;
+        this.tableNO = tableNO;
         this.maxPersonNum = maxPersonNum;
         this.personNum = personNum;
         this.state = state;
@@ -26,7 +26,7 @@ public class Table {
     public String toString() {
         return "Table{" +
                 "id=" + id +
-                ", tableID=" + tableID +
+                ", tableNO=" + tableNO +
                 ", maxPersonNum=" + maxPersonNum +
                 ", personNum=" + personNum +
                 ", state='" + state + '\'' +
@@ -41,12 +41,12 @@ public class Table {
         this.id = id;
     }
 
-    public int getTableID() {
-        return tableID;
+    public int getTableNO() {
+        return tableNO;
     }
 
-    public void setTableID(int tableID) {
-        this.tableID = tableID;
+    public void setTableNO(int tableNO) {
+        this.tableNO = tableNO;
     }
 
     public int getMaxPersonNum() {
