@@ -2,9 +2,9 @@ package com.system.servlet.database;
 
 import com.system.beans.*;
 
+import javax.print.attribute.standard.OrientationRequested;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.concurrent.SubmissionPublisher;
 
 
 /**
@@ -24,7 +24,6 @@ public class DBManager {
     } // 获取单例
 
     private Connection conn = null;
-//    private Statement stmt = null;
 
     public void initDB() {
         try {
@@ -36,12 +35,12 @@ public class DBManager {
     }
 
     public void connectDB() {
-        final String URL = "jdbc:mysql://121.4.121.91:3306/db_order_system?serverTimezone=UTC";
+        final String URL = "jdbc:mysql://121.4.121.91:3306/db_order_system?serverTimezone=GMT%2B8";
         final String USERNAME = "root";
         final String PASSWORD = "Songzhe_123";
         try {
             conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-//            stmt = conn.createStatement();
+//            conn.setAutoCommit(false);  // 关闭自动提交
             System.out.println("数据库连接");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,9 +49,6 @@ public class DBManager {
 
     public void closeDB() {
         try {
-//            if (stmt != null) {
-//                stmt.close();
-//            }
             if (conn != null) {
                 conn.close();
                 System.out.println("数据库连接关闭");
@@ -478,7 +474,16 @@ public class DBManager {
                 int id = res.getInt("id");
                 int tableNO = res.getInt("tableNO");
                 String state = res.getString("state");
-                String time = res.getString("time").toString();
+
+//                String time = res.getDate("time").toString();
+
+                String time = "";
+                Date _date = res.getDate("time");
+                Time _time = res.getTime("time");
+                if (_date != null && _time != null) {
+                    time = _date.toString() + " " + _time.toString();
+                }
+
                 int personNum = res.getInt("person_num");
                 double price = res.getDouble("price");
                 int userId = res.getInt("user_id");
@@ -525,7 +530,14 @@ public class DBManager {
                 int id = res.getInt("id");
                 int tableNO = res.getInt("tableNO");
                 String state = res.getString("state");
-                String time = res.getString("time").toString();
+
+                String time = "";
+                Date _date = res.getDate("time");
+                Time _time = res.getTime("time");
+                if (_date != null && _time != null) {
+                    time = _date.toString() + " " + _time.toString();
+                }
+
                 int personNum = res.getInt("person_num");
                 double price = res.getDouble("price");
                 int userId = res.getInt("user_id");
@@ -623,7 +635,14 @@ public class DBManager {
 //                int id = res.getInt("id");
                 int tableNO = res.getInt("tableNO");
                 String state = res.getString("state");
-                String time = res.getString("time").toString();
+
+                String time = "";
+                Date _date = res.getDate("time");
+                Time _time = res.getTime("time");
+                if (_date != null && _time != null) {
+                    time = _date.toString() + " " + _time.toString();
+                }
+
                 int personNum = res.getInt("person_num");
                 double price = res.getDouble("price");
                 int userId = res.getInt("user_id");
@@ -816,7 +835,7 @@ public class DBManager {
     }
 
     /**
-     * 插入订单详情表
+     * 插入订单详情表(tb_order_detail), 同时更新订单表(tb_order)
      *
      * @param orderId
      * @param dishId
@@ -825,17 +844,35 @@ public class DBManager {
     public boolean insertOrderDetail(int orderId, int dishId) {
         boolean isSuccess = false;
 
-        String sql = "INSERT INTO tb_order_detail(order_id, dish_id) " +
-                "VALUES('" + orderId + "', '" + orderId + "')";
+        double orderPrice = this.selectPriceByOrderId(orderId);
+        double dishPrice = this.selectPriceByDishId(dishId);
+
+        String sql0 = "INSERT INTO tb_order_detail(order_id, dish_id) " +
+                "VALUES('" + orderId + "', '" + dishId + "')";
+        String sql1 = "UPDATE tb_order SET price=" + (orderPrice + dishPrice) +
+                " WHERE id=" + orderId;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            int rows = stmt.executeUpdate(sql);
-            if (rows == 1) {
+            int rows0 = stmt.executeUpdate(sql0);
+            int rows1 = stmt.executeUpdate(sql1);
+
+            if (rows0 == 1 && rows1 == 1) {
                 isSuccess = true;
+                conn.commit();
             }
+//            else {
+//                throw java.sql.SQLException;
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         } finally {
             try {
                 if (stmt != null) {
@@ -849,7 +886,7 @@ public class DBManager {
     }
 
     /**
-     * 已选订单中删除菜的操作
+     * 已选订单中删除菜的操作, 同时更新订单表(tb_order)
      *
      * @param orderId
      * @param dishId
@@ -858,17 +895,36 @@ public class DBManager {
     public boolean deleteOrderDetail(int orderId, int dishId) {
         boolean isSuccess = false;
 
-        String sql = "DELETE FROM tb_order_detail " +
+        double orderPrice = this.selectPriceByOrderId(orderId);
+        double dishPrice = this.selectPriceByDishId(dishId);
+
+        String sql0 = "DELETE FROM tb_order_detail " +
                 "WHERE order_id=" + orderId + " AND dish_id=" + dishId + "";
+        String sql1 = "UPDATE tb_order SET price=" + (orderPrice - dishPrice) +
+                " WHERE id=" + orderId;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            int rows = stmt.executeUpdate(sql);
-            if (rows == 1) {
+            int rows0 = stmt.executeUpdate(sql0);
+            int rows1 = stmt.executeUpdate(sql1);
+
+            if (rows0 == 1 && rows1 == 1) {
                 isSuccess = true;
+                conn.commit();
             }
+//            else {
+//                throw java.sql.SQLException;
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
+
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException e2) {
+                e2.printStackTrace();
+            }
         } finally {
             try {
                 if (stmt != null) {
@@ -1076,6 +1132,7 @@ public class DBManager {
 
     /**
      * 插入 Table 信息, id 无需指定
+     *
      * @param table
      * @return
      */
@@ -1115,14 +1172,253 @@ public class DBManager {
         return isSuccess;
     }
 
+    /**
+     * 从菜品表(tb_dish)中查询价格
+     *
+     * @param dishId -- 菜品id
+     * @return
+     */
+    public double selectPriceByDishId(int dishId) {
+        double price = 0;
+
+        String sql = "SELECT price FROM tb_dish WHERE id=" + dishId;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+            price = res.getDouble("price");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return price;
+    }
+
+    /**
+     * 从订单表(tb_order)中查询价格
+     *
+     * @param orderId -- 订单id
+     * @return
+     */
+    public double selectPriceByOrderId(int orderId) {
+        double price = 0;
+
+        String sql = "SELECT price FROM tb_order WHERE id=" + orderId;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            res.next();
+            price = res.getDouble("price");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return price;
+    }
+
+//    /**
+//     * 生成订单
+//     *
+//     * @param order -- Order对象无需指定 id, time, price 属性
+//     * @return
+//     */
+//    public boolean insertOrder(Order order) {
+//        boolean isSuccess = false;
+//
+////        int id = order.getId();
+////        String time = order.getTime();
+////        double price = order.getPrice();
+////        int merchantId = order.getMerchantId();
+//
+//        int tableNO = order.getTableNO();
+//        String state = order.getState();
+//        int personNum = order.getPersonNum();
+//        int userId = order.getUserId();
+//
+//        PreparedStatement ptmt = null;
+//        String sql = "INSERT INTO tb_order(tableNO, state, time, person_num, user_id) " +
+//                "VALUES(?, ?, NOW(), ?, ?)";
+//        try {
+//            ptmt = conn.prepareStatement(sql);
+//            ptmt.setInt(1, tableNO);
+//            ptmt.setString(2, state);
+//            ptmt.setInt(3, personNum);
+//            ptmt.setInt(4, userId);
+//            int rows = ptmt.executeUpdate();
+//            if (rows == 1) {
+//                isSuccess = true;
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                if (ptmt != null) {
+//                    ptmt.close();
+//                }
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return isSuccess;
+//    }
+
+    /**
+     * 生成订单
+     *
+     * @return
+     */
+    public boolean insertOrder() {
+        boolean isSuccess = false;
+
+        Statement stmt = null;
+        String sql = "INSERT INTO tb_order() VALUES()";
+        try {
+            stmt = conn.createStatement();
+            int rows = stmt.executeUpdate(sql);
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+    // 根据订单id, 查订单
+    public Order selectOrderById(int id) {
+        Order order = null;
+
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            String sql = "SELECT * FROM tb_order WHERE id=" + id;
+            res = stmt.executeQuery(sql);
+            res.next();
+
+            int tableNO = res.getInt("tableNO");
+            String state = res.getString("state");
+
+            String time = "";
+            Date _date = res.getDate("time");
+            Time _time = res.getTime("time");
+            if (_date != null && _time != null) {
+                time = _date.toString() + " " + _time.toString();
+            }
+
+            int personNum = res.getInt("person_num");
+            double price = res.getDouble("price");
+            int userId = res.getInt("user_id");
+            int merchantId = res.getInt("merchant_id");
+
+            order = new Order(id, tableNO, state, time, personNum, price, userId, merchantId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return order;
+    }
+
+    // 查某状态的所有订单
+    public ArrayList<Order> selectOrdersByState(String state) {
+        ArrayList<Order> orders = new ArrayList<>();
+
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+
+            String sql = "SELECT * FROM tb_order WHERE state='" + state + "'";
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                int tableNO = res.getInt("tableNO");
+//                String state = res.getString("state");
+
+                String time = "";
+                Date _date = res.getDate("time");
+                Time _time = res.getTime("time");
+                if (_date != null && _time != null) {
+                    time = _date.toString() + " " + _time.toString();
+                }
+
+                int personNum = res.getInt("person_num");
+                double price = res.getDouble("price");
+                int userId = res.getInt("user_id");
+                int merchantId = res.getInt("merchant_id");
+
+                Order order = new Order(id, tableNO, state, time, personNum, price, userId, merchantId);
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return orders;
+    }
+
 
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
 
+//        ArrayList<Order> orders = DBManager.getInst().selectOrdersByState("未付款");
+//        for (Order o : orders) {
+//            System.out.println(o);
+//        }
 
-        Table table = new Table(0, 10, 8, 0, "state");
-        System.out.println(DBManager.getInst().insertTable(table));
+//        System.out.println(DBManager.getInst().selectOrderById(9));
+
+//        System.out.println(DBManager.getInst().deleteOrderDetail(5, 20));
+
+
+//        System.out.println(DBManager.getInst().insertOrder());
+
+//        System.out.println(DBManager.getInst().selectPriceByOrderId(1));
+
+//        Table table = new Table(0, 11, 8, 0, "state");
+//        System.out.println(DBManager.getInst().insertTable(table));
 
 //        ArrayList<Table> tables = DBManager.getInst().selectTablesByState("空闲");
 //        for (Table t : tables) {
@@ -1145,7 +1441,7 @@ public class DBManager {
 
 //        System.out.println(DBManager.getInst().deleteOrderDetail(2, 2));
 
-//        System.out.println(DBManager.getInst().insertOrderDetail(2, 2));
+//        System.out.println(DBManager.getInst().insertOrderDetail(5, 20));
 
 //        System.out.println(DBManager.getInst().selectDishById(5));
 
@@ -1201,7 +1497,7 @@ public class DBManager {
 
 //        System.out.println(DBManager.getInst().deleteUser("gft"));
 
-//
+
 //        ArrayList<Order> orders = DBManager.getInst().selectAllOrders();
 //        for (Order o : orders) {
 //            System.out.println(o);
