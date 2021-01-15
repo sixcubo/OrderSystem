@@ -2,7 +2,6 @@ package com.system.servlet.database;
 
 import com.system.beans.*;
 
-import javax.print.attribute.standard.OrientationRequested;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -59,16 +58,16 @@ public class DBManager {
     }
 
 
-//    // 全局商家id
-//    private String merchantId = null;
-//
-//    public void setMerchantId(String merchantId) {
-//        this.merchantId = merchantId;
-//    }
-//
-//    public String getMerchantId() {
-//        return merchantId;
-//    }
+    // 全局userId
+    private int globalUserId;
+
+    public void setGlobalUserId(int globalUserId) {
+        this.globalUserId = globalUserId;
+    }
+
+    public int getGlobalUserId() {
+        return globalUserId;
+    }
 
     /**
      * 查询所有 Dish
@@ -859,7 +858,7 @@ public class DBManager {
 
             if (rows0 == 1 && rows1 == 1) {
                 isSuccess = true;
-                conn.commit();
+//                conn.commit();
             }
 //            else {
 //                throw java.sql.SQLException;
@@ -910,7 +909,7 @@ public class DBManager {
 
             if (rows0 == 1 && rows1 == 1) {
                 isSuccess = true;
-                conn.commit();
+//                conn.commit();
             }
 //            else {
 //                throw java.sql.SQLException;
@@ -1295,7 +1294,7 @@ public class DBManager {
         boolean isSuccess = false;
 
         Statement stmt = null;
-        String sql = "INSERT INTO tb_order() VALUES()";
+        String sql = "INSERT INTO tb_order(time) VALUES(NOW())";
         try {
             stmt = conn.createStatement();
             int rows = stmt.executeUpdate(sql);
@@ -1398,10 +1397,118 @@ public class DBManager {
         return orders;
     }
 
+    /**
+     * @param order -- 无须指定time, merchantId
+     * @return
+     */
+    public boolean updateOrder(Order order) {
+        boolean isSuccess = false;
+
+        int id = order.getId();
+        int tableNO = order.getTableNO();
+        String state = order.getState();
+//        String time = order.getTime();
+        int personNum = order.getPersonNum();
+        double price = order.getPrice();
+        int userId = order.getUserId();
+
+        PreparedStatement ptmt = null;
+        String sql = "UPDATE tb_order " +
+                "SET tableNO=?, state=?, person_num=?, price=?, user_id=? " +
+                "WHERE id=?";
+        try {
+            ptmt = conn.prepareStatement(sql);
+            ptmt.setInt(1, tableNO);
+            ptmt.setString(2, state);
+//            ptmt.setString(3, time);
+            ptmt.setInt(3, personNum);
+            ptmt.setDouble(4, price);
+            ptmt.setInt(5, userId);
+            ptmt.setInt(6, id);
+
+            int rows = ptmt.executeUpdate();
+            if (rows == 1) {
+                isSuccess = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return isSuccess;
+    }
+
+    /**
+     * 根据userId查询相应订单
+     *
+     * @param userId
+     * @return
+     */
+    public ArrayList<Order> seleteOrdersByUserId(int userId) {
+        ArrayList<Order> orders = new ArrayList<>();
+
+        String sql = "SELECT * FROM tb_order WHERE user_id=" + userId;
+        Statement stmt = null;
+        ResultSet res = null;
+        try {
+            stmt = conn.createStatement();
+            res = stmt.executeQuery(sql);
+            while (res.next()) {
+                int id = res.getInt("id");
+                int tableNO = res.getInt("tableNO");
+                String state = res.getString("state");
+
+                String time = "";
+                Date _date = res.getDate("time");
+                Time _time = res.getTime("time");
+                if (_date != null && _time != null) {
+                    time = _date.toString() + " " + _time.toString();
+                }
+
+                int personNum = res.getInt("person_num");
+                double price = res.getDouble("price");
+//                int userId = res.getInt("user_id");
+                int merchantId = res.getInt("merchant_id");
+
+                Order order = new Order(id, tableNO, state, time, personNum, price, userId, merchantId);
+                orders.add(order);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (res != null) {
+                    res.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return orders;
+    }
+
 
     public static void main(String[] args) {
         DBManager.getInst().initDB();
         DBManager.getInst().connectDB();
+
+
+//        ArrayList<Order> orders = DBManager.getInst().seleteOrdersByUserId(10);
+//        for (Order o : orders) {
+//            System.out.println(o);
+//        }
+
+//        Order order = new Order(9, 10, "1", "NOW()", 2, 72, 10, 0);
+//        System.out.println(DBManager.getInst().updateOrder(order));
 
 //        ArrayList<Order> orders = DBManager.getInst().selectOrdersByState("未付款");
 //        for (Order o : orders) {
@@ -1504,10 +1611,10 @@ public class DBManager {
 //        }
 
 
-//        ArrayList<Order> orders = DBManager.getInst().selectOrdersByUsername("cxh");
-//        for (Order o : orders) {
-//            System.out.println(o);
-//        }
+        ArrayList<Order> orders = DBManager.getInst().selectOrdersByUsername("zhangchao");
+        for (Order o : orders) {
+            System.out.println(o);
+        }
 
 
 //        System.out.println(DBManager.getInst().selectOrderByTableNO(10));
